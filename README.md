@@ -11,3 +11,5 @@ The whole test app is based on MVVM architecture(which one is google recommended
 *****************************************************************************************
 Background Task added to this app : Duty is to request the server peridically every 30 minutes and store the 
 record to the local storage ( the quotes page is randomly selected from 1 to 10 ) 
+****************************************************************************************
+Error Handling Features with Generic Classes for API call. (added)

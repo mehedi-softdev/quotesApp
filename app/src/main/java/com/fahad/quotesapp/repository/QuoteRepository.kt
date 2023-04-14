@@ -39,4 +39,13 @@ class QuoteRepository(private val quoteService: QuoteService,
 
 
     }
+
+    suspend fun backgroundTask() {
+        val randomPageNumber = (Math.random() * 10).toInt()
+        val result = quoteService.getQuotes(randomPageNumber)
+        if(result?.body() != null) {
+            // store to local storage
+            quoteDatabase.getQuoteDao().insertQuote(result.body()!!.results)
+        }
+    }
 }

@@ -10,18 +10,25 @@ import com.fahad.quotesapp.models.QuoteList
 class QuoteRepository(private val quoteService: QuoteService,
     private val quoteDatabase: QuoteDatabase) {
     // live data for live action
-    private val quotesLiveData = MutableLiveData<QuoteList>()
+    private val quotesLiveData = MutableLiveData<Resource<QuoteList>>()
 
-    val quotes : LiveData<QuoteList>
+    val quotes : LiveData<Resource<QuoteList>>
     get() = quotesLiveData
 
     suspend fun getQuotes(page: Int) {
+        quotesLiveData.postValue(Resource.Loading())
 
         if(Network.isInternetAvailable()) {
-            val result = quoteService.getQuotes(page)
-            if(result?.body() != null) {
-                quoteDatabase.getQuoteDao().insertQuote(result.body()!!.results)
-                quotesLiveData.postValue(result.body())
+            try {
+                val result = quoteService.getQuotes(page)
+                if(result?.body() != null) {
+                    quoteDatabase.getQuoteDao().insertQuote(result.body()!!.results)
+                    quotesLiveData.postValue(Resource.Success(result.body()))
+                }else {
+                    quotesLiveData.postValue(Resource.Error("API Error!"))
+                }
+            }catch (e: Exception) {
+                quotesLiveData.postValue(Resource.Error("Some Error Occurred!"))
             }
         } else {
             // fetch data from local storage
@@ -34,7 +41,7 @@ class QuoteRepository(private val quoteService: QuoteService,
                 1,
                 1
             )
-            quotesLiveData.postValue(quoteList)
+            quotesLiveData.postValue(Resource.Success(quoteList))
         }
 
 

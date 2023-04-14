@@ -2,11 +2,13 @@ package com.fahad.quotesapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.fahad.quotesapp.api.QuoteService
 import com.fahad.quotesapp.api.RetrofitHelper
 import com.fahad.quotesapp.databinding.ActivityMainBinding
 import com.fahad.quotesapp.repository.QuoteRepository
+import com.fahad.quotesapp.repository.Resource
 import com.fahad.quotesapp.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +24,25 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = MainViewModel(repository)
 
         mainViewModel.quotes.observe(this, Observer {
-            binding.textView.text = it.results.size.toString()
+            when(it) {
+                is Resource.Loading -> {
+                    Toast.makeText(this, "Data is loading...", Toast.LENGTH_SHORT).show()
+                }
+                is Resource.Success -> {
+                    it.data?.let {
+                        binding.textView.text = it.results.size.toString()
+                    }
+                }
+                is Resource.Error -> {
+                    it.errorMessage.let {
+                        Toast.makeText(
+                            this,
+                            it,
+                            Toast.LENGTH_SHORT
+                            ).show()
+                    }
+                }
+            }
         })
     }
 }

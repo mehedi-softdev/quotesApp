@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fahad.quotesapp.models.QuoteList
 import com.fahad.quotesapp.repository.QuoteRepository
+import com.fahad.quotesapp.repository.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -15,6 +16,6 @@ class MainViewModel(private val repository: QuoteRepository): ViewModel() {
         }
     }
 
-    val quotes: LiveData<QuoteList>
+    val quotes: LiveData<Resource<QuoteList>>
     get() = repository.quotes
 }
